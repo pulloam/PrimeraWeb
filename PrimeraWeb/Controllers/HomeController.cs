@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PrimeraWeb.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,14 +17,34 @@ namespace PrimeraWeb.Controllers
 
         [HttpPost]
         public ActionResult Index(FormCollection formulario) {
-            string nombre, apellido;
+            string nombre, clave;
 
             nombre = formulario["nombre"].ToString();
-            apellido = formulario["apellido"].ToString();
+            clave = formulario["clave"].ToString();
 
-            return Content("Llegaron los datos, nombre " + nombre + " apellido " 
-                + apellido);
+            if(clave == "123456") {
+                Usuario usuario = new Usuario();
+                usuario.Nombre = nombre;
+                usuario.Clave = clave;
 
+                TempData["usuario"] = usuario;
+
+                return RedirectToAction("HomeUsuario");
+            } else {
+                if(clave == "") { 
+                    ViewBag.Error = "Debe ingresar clave";
+                } else {
+                    ViewBag.Error = "Credenciales erroneas";
+                }
+
+                return View();
+            }
+
+        }
+
+        public ActionResult HomeUsuario() {
+            ViewBag.Usuario = ((Usuario) TempData["usuario"]);
+            return View();
         }
     }
 }
